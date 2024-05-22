@@ -1,48 +1,54 @@
-import Answer from "../models/answer.js";
+import AnswerModel from "../models/answer.js";
+import { v4 as uuidv4 } from "uuid";
 
 // Gauti visus atsakymus pagal klausimo ID
-export const GET_ALL_ANSWERS = async (req, res) => {
+export const GET_QUESTION_ANSWERS = async (req, res) => {
   try {
-    const { questionId } = req.params;
-    const answers = await Answer.find({ questionId }).populate("questionId");
-    res.status(200).json(answers);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
+    const answers = await AnswerModel.find();
+
+    return res.status(200).json({ answers: answers });
+  } catch (err) {
+    console.log(err);
   }
 };
 
 // Sukurti atsakymą konkrečiam klausimui
 export const CREATE_ANSWER = async (req, res) => {
-  const { questionId } = req.params;
-  const { answer } = req.body;
-
-  const newAnswer = new Answer({
-    questionId,
-    answer,
-    likes: 0,
-    dislikes: 0,
-    createdAt: new Date(),
-  });
-
   try {
-    const savedAnswer = await newAnswer.save();
-    const populatedAnswer = await savedAnswer
-      .populate("questionId")
-      .execPopulate();
-    res.status(201).json(populatedAnswer);
-  } catch (error) {
-    res.status(409).json({ message: error.message });
+    const answer = new AnswerModel({
+      questionId: req.params.id,
+      id: uuidv4(),
+      answer: req.body.answer,
+      likes: req.body.likes,
+      dislikes: req.body.dislikes,
+      createdAt: new Date(),
+    });
+
+    const response = await answer.save();
+    return res
+      .status(201)
+      .json({ answer: response, message: "Answer added successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
 // Ištrinti konkretų atsakymą pagal atsakymo ID
-export const DELETE_ANSWER = async (req, res) => {
-  const { answerId } = req.params;
-
+export const DELETE_ANSWER_BY_ID = async (req, res) => {
   try {
-    await Answer.findByIdAndRemove(answerId);
-    res.status(200).json({ message: "Answer deleted successfully." });
-  } catch (error) {
-    res.status(404).json({ message: error.message });
+    const answer = await AnswerModel.findOne({ id: req.params.id });
+
+    // if (answer.questionId !== req.body.questionId) {
+    //   return res
+    //     .status(401)
+    //     .json({ message: "this answer does not belong to you" });
+    // }
+
+    const response = await AnswerModel.deleteOne({ id: req.params.id });
+
+    return res.status(200).json({ response: response });
+  } catch (err) {
+    console.log(err);
   }
 };

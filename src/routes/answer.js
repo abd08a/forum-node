@@ -1,14 +1,16 @@
 import express from "express";
 import {
-  GET_ALL_ANSWERS,
+  GET_QUESTION_ANSWERS,
   CREATE_ANSWER,
-  DELETE_ANSWER,
+  DELETE_ANSWER_BY_ID,
 } from "../controllers/answer.js";
+
+import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/questions/:questionId/answers", GET_ALL_ANSWERS);
-router.post("/questions/:questionId/answers", CREATE_ANSWER);
-router.delete("/questions/:questionId/answers/:answerId", DELETE_ANSWER);
+router.get("/question/:id/answers", GET_QUESTION_ANSWERS);
+router.post("/question/:id/answers", auth, CREATE_ANSWER);
+router.delete("/answer/:id", DELETE_ANSWER_BY_ID);
 
 export default router;

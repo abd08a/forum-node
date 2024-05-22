@@ -13,6 +13,7 @@ export const auth = (req, res, next) => {
     }
 
     req.body.userId = decoded.user_id;
+    req.body.questionId = decoded.question_id;
 
     return next();
   });
