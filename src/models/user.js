@@ -6,8 +6,8 @@ const validateEmail = function (email) {
 };
 
 const userSchema = mongoose.Schema({
-  userId: { type: String, required: true },
-  username: { type: String, required: true, unique: true },
+  id: { type: String, required: true },
+  name: { type: String, required: true, unique: true },
   email: {
     type: String,
     trim: true,

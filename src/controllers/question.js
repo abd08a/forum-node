@@ -19,7 +19,8 @@ export const CREATE_QUESTION = async (req, res) => {
       theme: req.body.theme,
       question: req.body.description,
       name: req.body.name,
-      questionId: uuidv4(),
+      id: uuidv4(),
+      userId: req.body.userId,
       createdAt: new Date(),
     });
 
