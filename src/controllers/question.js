@@ -37,22 +37,25 @@ export const CREATE_QUESTION = async (req, res) => {
 // Ištrinti klausimą pagal ID
 export const DELETE_QUESTION_BY_ID = async (req, res) => {
   try {
-    const question = await QuestionModel.findById(req.params.id);
+    const question = await QuestionModel.findOne({ id: req.params.id });
 
     if (!question) {
-      return res.status(404).json({ message: "Question not found" });
+      return res.status(404).json({
+        message: "Question not found",
+      });
     }
 
-    if (question.userId.toString() !== req.user.id) {
-      return res
-        .status(401)
-        .json({ message: "This question does not belong to you" });
+    if (question.userId !== req.body.userId) {
+      return res.status(401).json({
+        message:
+          "This question is not yours, you are not allowed to delete it.",
+      });
     }
 
-    await QuestionModel.findByIdAndDelete(req.params.id);
-    return res.status(200).json({ message: "Question deleted successfully" });
+    const response = await QuestionModel.deleteOne({ id: req.params.id });
+
+    return res.status(200).json({ response: response });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Server error" });
+    console.log(err);
   }
 };
