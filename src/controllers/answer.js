@@ -3,12 +3,26 @@ import { v4 as uuidv4 } from "uuid";
 
 // Gauti visus atsakymus pagal klausimo ID
 export const GET_QUESTION_ANSWERS = async (req, res) => {
-  try {
-    const answers = await AnswerModel.find();
+  const { id: questionId } = req.params; // Extract questionId from the request parameters
 
-    return res.status(200).json({ answers: answers });
+  try {
+    // Find answers where questionId matches the provided questionId
+    const answers = await AnswerModel.find({ questionId });
+
+    return res.status(200).json({ answers });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const GET_ANSWERS_BY_ID = async (req, res) => {
+  try {
+    const answers = await AnswerModel.findOne({ id: req.params.questionId });
+    return res.status(200).json({ answers });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -18,6 +32,7 @@ export const CREATE_ANSWER = async (req, res) => {
     const answer = new AnswerModel({
       questionId: req.params.id,
       id: uuidv4(),
+      name: req.body.name,
       answer: req.body.answer,
       likes: req.body.likes,
       dislikes: req.body.dislikes,

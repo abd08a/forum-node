@@ -11,13 +11,22 @@ export const GET_ALL_QUESTIONS = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+export const GET_QUESTION_BY_ID = async (req, res) => {
+  try {
+    const questions = await QuestionModel.findOne({ id: req.params.id });
+    return res.status(200).json({ questions });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
 
 // Sukurti naują klausimą
 export const CREATE_QUESTION = async (req, res) => {
   try {
     const question = new QuestionModel({
       theme: req.body.theme,
-      question: req.body.description,
+      question: req.body.question,
       name: req.body.name,
       id: uuidv4(),
       userId: req.body.userId,
